@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if request is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper to check if document belongs to the requesting user
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // Helper to check if user has admin claim
+    function isAdmin() {
+      return isAuth() && request.auth.token.role == 'admin';
+    }
+
+    // Users Collection rules
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // Knowledge Base Articles rules
+    match /knowledge_articles/{articleId} {
+      // Anyone can read approved/published articles; admins can do anything
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // FCM Subscription topic rules
+    match /subscriptions/{subscriptionId} {
+      allow read, write: if isOwner(subscriptionId) || isAdmin();
+    }
+
+    // Audit logs (Admin write-only, no user access)
+    match /audit_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
