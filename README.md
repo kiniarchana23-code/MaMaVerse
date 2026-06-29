@@ -1,11 +1,15 @@
-# MaMaVerse — AI Pregnancy & Parenthood Platform 🍼✨
+# MaMAVerse — AI Pregnancy & Parenthood Platform 🍼✨
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
+![MaMAVerse Logo](assets/logo.png)
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Responsible AI](https://img.shields.io/badge/AI-Responsible_Human_in_Loop-indigo.svg)](#admin-approval-workflow)
 [![Google Cloud Run](https://img.shields.io/badge/Deployed-Google_Cloud_Run-blue.svg)](#cloud-deployment)
 [![GCP Project ID](https://img.shields.io/badge/GCP_Project_ID-project--7e1f15c5--7bea--42ce--ad3-teal.svg)](#architecture)
 
 > **"Your trusted AI companion from pregnancy to parenthood. Medically curated, admin-validated intelligence at your fingertips."**
+
+![Dashboard Preview](assets/dashboard.png)
 
 ---
 
@@ -134,4 +138,4 @@ gcloud run deploy mamaverse-backend \
 ---
 
 ## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

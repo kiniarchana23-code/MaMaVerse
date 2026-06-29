@@ -14,7 +14,6 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from routers import auth, profile, agents, content, admin, healthcare, notifications
-from middleware.auth_middleware import verify_firebase_token
 from services.firestore_service import init_firestore
 from config import settings
 
