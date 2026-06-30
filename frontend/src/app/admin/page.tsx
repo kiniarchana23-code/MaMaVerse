@@ -103,7 +103,7 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
         
         {/* Header and stats */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-dark-700 pb-6">
           <div>
             <h1 className="text-2xl font-bold font-display text-white flex items-center gap-2">
               <ShieldAlert className="w-6 h-6 text-rose-400" />
@@ -125,7 +125,7 @@ export default function AdminPage() {
 
         {/* Stats grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="card-glass border-white/10 p-4 flex items-center gap-4">
+          <div className="card-glass border-dark-700 p-4 flex items-center gap-4">
             <div className="p-3 rounded-lg bg-amber-500/10 text-amber-400">
               <Clock className="w-6 h-6" />
             </div>
@@ -135,7 +135,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="card-glass border-white/10 p-4 flex items-center gap-4">
+          <div className="card-glass border-dark-700 p-4 flex items-center gap-4">
             <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-400">
               <CheckCircle2 className="w-6 h-6" />
             </div>
@@ -145,7 +145,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="card-glass border-white/10 p-4 flex items-center gap-4">
+          <div className="card-glass border-dark-700 p-4 flex items-center gap-4">
             <div className="p-3 rounded-lg bg-rose-500/10 text-rose-400">
               <XCircle className="w-6 h-6" />
             </div>
@@ -155,8 +155,8 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="card-glass border-white/10 p-4 flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-brand-500/10 text-brand-400">
+          <div className="card-glass border-dark-700 p-4 flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-brand-500/10 text-brand-500">
               <Users className="w-6 h-6" />
             </div>
             <div>
@@ -171,9 +171,9 @@ export default function AdminPage() {
           
           {/* Left Col: Ingestion Card */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="card-glass border-white/10 space-y-4">
+            <div className="card-glass border-dark-700 space-y-4">
               <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-brand-400" />
+                <Plus className="w-5 h-5 text-brand-500" />
                 <span>Ingest Medical Resource</span>
               </h3>
               <p className="text-xs text-white/60">
@@ -238,9 +238,9 @@ export default function AdminPage() {
 
           {/* Right 2 cols: Review queue list */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="card-glass border-white/10 min-h-[400px]">
-              <h3 className="text-lg font-bold font-display text-white border-b border-white/10 pb-4 mb-4 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-brand-400" />
+            <div className="card-glass border-dark-700 min-h-[400px]">
+              <h3 className="text-lg font-bold font-display text-white border-b border-dark-700 pb-4 mb-4 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-brand-500" />
                 <span>AI Ingested Pending Queue ({pending.length})</span>
               </h3>
 
@@ -252,10 +252,10 @@ export default function AdminPage() {
               ) : pending.length > 0 ? (
                 <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2">
                   {pending.map((art) => (
-                    <div key={art.id} className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                    <div key={art.id} className="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
                       <div className="flex items-start justify-between">
                         <div>
-                          <span className="text-[10px] uppercase font-bold text-brand-300 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20">
+                          <span className="text-[10px] uppercase font-bold text-brand-500 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20">
                             {art.category}
                           </span>
                           <h4 className="font-bold text-white text-base mt-2">{art.title}</h4>
@@ -271,7 +271,7 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <p className="text-xs text-white/70 bg-white/5 p-3 rounded-lg border border-white/5 italic">
+                      <p className="text-xs text-white/70 bg-dark-900 p-3 rounded-lg border border-dark-700 italic">
                         {art.summary}
                       </p>
 
@@ -282,7 +282,7 @@ export default function AdminPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                      <div className="flex items-center justify-between pt-2 border-t border-dark-700">
                         <div className="text-[11px] text-white/40">
                           Source: <a href={art.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">{art.source_name}</a>
                         </div>

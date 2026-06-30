@@ -24,7 +24,40 @@ steps:
       '--allow-unauthenticated'
     ]
     id: 'deploy-backend'
+  # ─── Frontend Container Build & Push ────────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '--no-cache',
+      '--build-arg', 'NEXT_PUBLIC_API_URL=$_NEXT_PUBLIC_API_URL',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_API_KEY=$_NEXT_PUBLIC_FIREBASE_API_KEY',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=$_NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$_NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_APP_ID=$_NEXT_PUBLIC_FIREBASE_APP_ID',
+      '-t', 'gcr.io/$PROJECT_ID/mamaverse-frontend:latest',
+      './frontend'
+    ]
+    id: 'build-frontend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/mamaverse-frontend:latest']
+    id: 'push-frontend-latest'
+
+  # ─── Deploy Frontend to Google Cloud Run ────────────────────────────────────
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy', 'mamaverse-frontend',
+      '--image', 'gcr.io/$PROJECT_ID/mamaverse-frontend:latest',
+      '--region', 'asia-south1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+    id: 'deploy-frontend'
 
 images:
   - 'gcr.io/$PROJECT_ID/mamaverse-backend:latest'
+  - 'gcr.io/$PROJECT_ID/mamaverse-frontend:latest'
 

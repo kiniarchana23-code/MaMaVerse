@@ -24,12 +24,16 @@ export default function DashboardPage() {
   const [articles, setArticles] = useState<any[]>([]);
   const [articlesLoading, setArticlesLoading] = useState(false);
 
-  // Redirect if not logged in
+  // Redirect if not logged in or no profile
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
+    if (!isLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (!profile) {
+        router.push('/onboarding');
+      }
     }
-  }, [user, isLoading, router]);
+  }, [user, profile, isLoading, router]);
 
   // Sync user profile state
   useEffect(() => {
@@ -145,11 +149,11 @@ export default function DashboardPage() {
               </p>
             </div>
             {/* Week / Month quick selection controls */}
-            <div className="flex items-center gap-2 bg-white/10 p-1.5 rounded-xl border border-white/20">
+            <div className="flex items-center gap-2 bg-white/10 p-1.5 rounded-xl border border-dark-600">
               <button
                 disabled={activeWeekOrMonth <= (isPreg ? 1 : 0)}
                 onClick={() => setActiveWeekOrMonth(prev => prev - 1)}
-                className="p-1 rounded-lg hover:bg-white/10 text-white disabled:opacity-30"
+                className="p-1 rounded-lg hover:bg-dark-800 text-white disabled:opacity-30"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -159,7 +163,7 @@ export default function DashboardPage() {
               <button
                 disabled={activeWeekOrMonth >= (isPreg ? 42 : 36)}
                 onClick={() => setActiveWeekOrMonth(prev => prev + 1)}
-                className="p-1 rounded-lg hover:bg-white/10 text-white disabled:opacity-30"
+                className="p-1 rounded-lg hover:bg-dark-800 text-white disabled:opacity-30"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -167,8 +171,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Medically Curated Phase Guide */}
-          <div className="card-glass border-white/10 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="card-glass border-dark-700 space-y-4">
+            <div className="flex items-center justify-between border-b border-dark-700 pb-4">
               <h3 className="text-lg font-bold font-display text-white flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-brand-400" />
                 {isPreg ? 'Fetal Development & Maternal Health' : 'Infant Milestones & Recovery'}
@@ -203,7 +207,7 @@ export default function DashboardPage() {
             ) : articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {articles.map((art) => (
-                  <div key={art.id} className="card-glass border-white/10 hover:border-brand-500/30 p-5 flex flex-col justify-between">
+                  <div key={art.id} className="card-glass border-dark-700 hover:border-brand-500/30 p-5 flex flex-col justify-between">
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-brand-300 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20">
                         {art.category}
@@ -221,7 +225,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="card-glass text-center py-8 text-sm text-white/40 border-dashed border-white/10">
+              <div className="card-glass text-center py-8 text-sm text-white/40 border-dashed border-dark-700">
                 No admin-validated articles currently published for this week.
               </div>
             )}
@@ -230,9 +234,9 @@ export default function DashboardPage() {
 
         {/* Right Col: Personal AI Companion Chat */}
         <div className="space-y-6">
-          <div className="card-glass border-white/10 h-full flex flex-col justify-between">
+          <div className="card-glass border-dark-700 h-full flex flex-col justify-between">
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-dark-700 pb-4">
                 <Sparkles className="w-5 h-5 text-brand-400" />
                 <span>AI Health Companion</span>
               </div>
@@ -241,7 +245,7 @@ export default function DashboardPage() {
               </p>
 
               {/* Agent specialty selection */}
-              <div className="grid grid-cols-3 gap-1 bg-white/5 p-1 rounded-lg text-xs font-semibold">
+              <div className="grid grid-cols-3 gap-1 bg-dark-900 p-1 rounded-lg text-xs font-semibold">
                 <button
                   onClick={() => setAgentType(isPreg ? 'pregnancy' : 'newmom')}
                   className={`py-1.5 rounded ${agentType === 'pregnancy' || agentType === 'newmom' ? 'bg-brand-500 text-white' : 'text-white/60 hover:text-white'}`}
@@ -264,7 +268,7 @@ export default function DashboardPage() {
 
               {/* Agent chat response screen */}
               {chatResponse ? (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm max-h-[300px] overflow-y-auto space-y-2 animate-fade-in">
+                <div className="p-4 rounded-xl bg-dark-900 border border-dark-700 text-sm max-h-[300px] overflow-y-auto space-y-2 animate-fade-in">
                   <div className="flex items-center justify-between text-xs text-white/40">
                     <span className="font-semibold text-brand-300">MaMaVerse AI</span>
                     <span>Sources: WHO / ICMR</span>
@@ -272,7 +276,7 @@ export default function DashboardPage() {
                   <div className="text-white/80 prose-mamaverse text-xs md:text-sm" dangerouslySetInnerHTML={{ __html: chatResponse.replace(/\n/g, '<br />') }} />
                 </div>
               ) : (
-                <div className="p-8 rounded-xl bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center text-center text-white/40 text-xs">
+                <div className="p-8 rounded-xl bg-dark-900 border border-dashed border-dark-700 flex flex-col items-center justify-center text-center text-white/40 text-xs">
                   <AlertCircle className="w-8 h-8 text-white/20 mb-2" />
                   <span>Ask a question below to start the conversation.</span>
                 </div>

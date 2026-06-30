@@ -4,19 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { profileApi } from '@/lib/api';
-import { Sparkles, Baby, HelpCircle, MapPin, Check, Heart, Calendar } from 'lucide-react';
+import { Sparkles, Baby, Heart, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, profile, refreshProfile } = useAuth();
   
-  const [userType, setUserType] = useState<'pregnant' | 'new_mom'>('pregnant');
+  const [userType, setUserType] = useState<'pregnant' | 'new_mom' | null>(null);
   const [pregnancyWeek, setPregnancyWeek] = useState<number>(12);
-  const [babyBirthDate, setBabyBirthDate] = useState<string>('');
+  const [babyAgeMonths, setBabyAgeMonths] = useState<number | ''>('');
   const [dietaryPref, setDietaryPref] = useState<'vegetarian' | 'non_vegetarian' | 'vegan'>('vegetarian');
-  const [city, setCity] = useState<string>('');
-  const [state, setState] = useState<string>('Maharashtra');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,14 +27,26 @@ export default function OnboardingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userType) {
+      toast.error('Please select your current phase');
+      return;
+    }
+    
     setLoading(true);
+    
+    // Calculate an approximate baby_birth_date if age is provided
+    let babyBirthDate = null;
+    if (userType === 'new_mom' && babyAgeMonths !== '') {
+      const calcDate = new Date();
+      calcDate.setMonth(calcDate.getMonth() - Number(babyAgeMonths));
+      babyBirthDate = calcDate.toISOString().split('T')[0];
+    }
+
     try {
       await profileApi.create({
         user_type: userType,
         pregnancy_week: userType === 'pregnant' ? pregnancyWeek : null,
-        baby_birth_date: userType === 'new_mom' ? babyBirthDate : null,
-        city: city || null,
-        state: state || null,
+        baby_birth_date: babyBirthDate,
         dietary_preference: dietaryPref,
         is_subscribed: !user?.isAnonymous,
       });
@@ -61,103 +71,114 @@ export default function OnboardingPage() {
 
   return (
     <main className="min-h-[calc(100vh-40px)] flex flex-col items-center justify-center p-4 mesh-bg relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-brand-600/10 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-rose-600/10 blur-[120px] pointer-events-none"></div>
+      {/* Decorative blurred circles */}
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-brand-500/10 blur-[120px] pointer-events-none animate-float"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-rose-500/10 blur-[120px] pointer-events-none animate-float" style={{ animationDelay: '2s' }}></div>
 
-      <div className="w-full max-w-lg card-glass border-white/10 z-10">
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow-brand mb-3">
-            <Sparkles className="w-6 h-6 text-white" />
+      <div className="w-full max-w-xl z-10">
+        <div className="flex flex-col items-center text-center mb-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center shadow-glow-brand mb-6 animate-fade-in">
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold font-display text-white">Let's Personalize Your Journey</h1>
-          <p className="text-sm text-white/60">
-            Tell us about your current phase so we can tailor the medically curated insights just for you.
+          <h1 className="text-4xl font-extrabold font-display tracking-tight text-white mb-3">
+            Let's Personalize Your Journey
+          </h1>
+          <p className="text-sm text-white/60 max-w-sm font-medium">
+            Select your current phase to get started. You can skip the optional details if you prefer.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* User Type Selection */}
-          <div className="space-y-3">
-            <label className="text-sm font-semibold text-white/80 block">Current Phase</label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setUserType('pregnant')}
-                className={`p-4 rounded-xl flex flex-col items-center justify-center gap-2 border text-center transition-all ${
-                  userType === 'pregnant'
-                    ? 'bg-brand-500/20 border-brand-500 text-white shadow-glow-brand'
-                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                }`}
-              >
-                <Heart className="w-6 h-6 text-rose-400" />
-                <span className="font-semibold text-sm">I am Pregnant</span>
-              </button>
+        <form onSubmit={handleSubmit} className="space-y-8 animate-slide-up">
+          {/* User Type Selection Cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setUserType('pregnant')}
+              className={`relative overflow-hidden p-6 rounded-2xl flex flex-col items-center justify-center gap-3 border-2 text-center transition-all duration-300 ${
+                userType === 'pregnant'
+                  ? 'bg-brand-950/40 border-brand-500 shadow-glow-brand'
+                  : 'bg-dark-900 border-dark-700 hover:bg-dark-700 hover:border-dark-600'
+              }`}
+            >
+              <div className={`p-3 rounded-full transition-colors ${userType === 'pregnant' ? 'bg-brand-500 text-white' : 'bg-dark-700 text-white/40'}`}>
+                <Heart className="w-8 h-8" />
+              </div>
+              <span className={`font-bold text-lg ${userType === 'pregnant' ? 'text-white' : 'text-white/60'}`}>I am Pregnant</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setUserType('new_mom')}
-                className={`p-4 rounded-xl flex flex-col items-center justify-center gap-2 border text-center transition-all ${
-                  userType === 'new_mom'
-                    ? 'bg-brand-500/20 border-brand-500 text-white shadow-glow-brand'
-                    : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                }`}
-              >
-                <Baby className="w-6 h-6 text-brand-400" />
-                <span className="font-semibold text-sm">I am a New Mom</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setUserType('new_mom')}
+              className={`relative overflow-hidden p-6 rounded-2xl flex flex-col items-center justify-center gap-3 border-2 text-center transition-all duration-300 ${
+                userType === 'new_mom'
+                  ? 'bg-brand-950/40 border-brand-500 shadow-glow-brand'
+                  : 'bg-dark-900 border-dark-700 hover:bg-dark-700 hover:border-dark-600'
+              }`}
+            >
+              <div className={`p-3 rounded-full transition-colors ${userType === 'new_mom' ? 'bg-brand-500 text-white' : 'bg-dark-700 text-white/40'}`}>
+                <Baby className="w-8 h-8" />
+              </div>
+              <span className={`font-bold text-lg ${userType === 'new_mom' ? 'text-white' : 'text-white/60'}`}>I am a New Mom</span>
+            </button>
           </div>
 
-          {/* Conditional inputs */}
-          {userType === 'pregnant' ? (
-            <div className="space-y-2 animate-fade-in">
-              <label className="text-sm font-semibold text-white/80 block flex justify-between">
-                <span>Pregnancy Week</span>
-                <span className="text-brand-300 font-bold">Week {pregnancyWeek}</span>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="42"
-                value={pregnancyWeek}
-                onChange={(e) => setPregnancyWeek(parseInt(e.target.value))}
-                className="w-full accent-brand-500 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="flex justify-between text-xs text-white/40">
-                <span>Trimester 1 (W1-12)</span>
-                <span>Trimester 2 (W13-26)</span>
-                <span>Trimester 3 (W27+)</span>
+          {/* Conditional inputs based on selection */}
+          <div className="transition-all duration-500 ease-in-out" style={{ minHeight: userType ? '120px' : '0' }}>
+            {userType === 'pregnant' && (
+              <div className="card-glass border-dark-700 animate-fade-in space-y-4">
+                <label className="text-sm font-semibold text-white/80 flex items-center justify-between">
+                  <span className="flex items-center gap-2"><Heart className="w-4 h-4 text-brand-400" /> Pregnancy Week (Optional)</span>
+                  <span className="text-brand-500 font-bold bg-brand-500/20 px-3 py-1 rounded-full">Week {pregnancyWeek}</span>
+                </label>
+                <div className="pt-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="42"
+                    value={pregnancyWeek}
+                    onChange={(e) => setPregnancyWeek(parseInt(e.target.value))}
+                    className="w-full accent-brand-500 h-2 bg-dark-700 rounded-lg appearance-none cursor-pointer outline-none"
+                  />
+                  <div className="flex justify-between text-xs text-white/40 font-medium mt-3 px-1 uppercase tracking-wider">
+                    <span>Trimester 1</span>
+                    <span>Trimester 2</span>
+                    <span>Trimester 3</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-2 animate-fade-in">
-              <label className="text-sm font-semibold text-white/80 block flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-brand-400" /> Baby's Date of Birth
-              </label>
-              <input
-                type="date"
-                required
-                value={babyBirthDate}
-                onChange={(e) => setBabyBirthDate(e.target.value)}
-                className="input-glass"
-                max={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-          )}
+            )}
+            
+            {userType === 'new_mom' && (
+              <div className="card-glass border-dark-700 animate-fade-in space-y-4">
+                <label className="text-sm font-semibold text-white/80 block flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-brand-400" /> Baby's Age in Months (Optional)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="36"
+                  placeholder="e.g., 3"
+                  value={babyAgeMonths}
+                  onChange={(e) => setBabyAgeMonths(e.target.value ? parseInt(e.target.value) : '')}
+                  className="input-glass border-dark-700 focus:border-brand-500 bg-dark-900"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Diet Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-white/80 block">Dietary Preference</label>
-            <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-4 pt-4 border-t border-dark-700">
+            <label className="text-sm font-semibold text-white/80 block text-center">Dietary Preference (Optional)</label>
+            <div className="grid grid-cols-3 gap-3 bg-dark-900 p-2 rounded-xl border border-dark-700">
               {(['vegetarian', 'non_vegetarian', 'vegan'] as const).map((pref) => (
                 <button
                   type="button"
                   key={pref}
                   onClick={() => setDietaryPref(pref)}
-                  className={`py-2 px-3 rounded-lg border text-xs font-semibold capitalize transition-all ${
+                  className={`py-3 px-3 rounded-lg text-xs md:text-sm font-bold capitalize transition-all duration-300 ${
                     dietaryPref === pref
-                      ? 'bg-brand-500/20 border-brand-500 text-white'
-                      : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                      ? 'bg-gradient-brand text-white shadow-md'
+                      : 'text-white/60 hover:text-white hover:bg-dark-900'
                   }`}
                 >
                   {pref.replace('_', ' ')}
@@ -166,41 +187,10 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          {/* City / Location */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-white/80 block flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-rose-400" /> City in India (Optional)
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="text"
-                placeholder="e.g. Mumbai"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="input-glass"
-              />
-              <select
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="input-glass"
-              >
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Karnataka">Karnataka</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Telangana">Telangana</option>
-                <option value="West Bengal">West Bengal</option>
-                <option value="Gujarat">Gujarat</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
-              </select>
-            </div>
-            <span className="text-xs text-white/40 block">Used to find nearby healthcare facilities and hospitals.</span>
-          </div>
-
           <button
             type="submit"
-            disabled={loading}
-            className="w-full btn-primary py-3 flex items-center justify-center gap-2 text-sm font-semibold mt-4 shadow-glow-brand"
+            disabled={loading || !userType}
+            className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-base font-bold shadow-glow-brand mt-8"
           >
             {loading ? 'Creating Profile...' : 'Save Profile & Enter MaMaVerse'}
           </button>

@@ -20,10 +20,14 @@ export default function WellnessPage() {
   const [queryLoading, setQueryLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
+    if (!isLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (!profile) {
+        router.push('/onboarding');
+      }
     }
-  }, [user, isLoading, router]);
+  }, [user, profile, isLoading, router]);
 
   const loadMindfulnessExercise = async () => {
     setExerciseLoading(true);
@@ -73,16 +77,16 @@ export default function WellnessPage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Mindfulness / Breathing Card */}
-          <div className="card-glass border-white/10 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="card-glass border-dark-700 space-y-4">
+            <div className="flex items-center justify-between border-b border-dark-700 pb-4">
               <h2 className="text-xl font-bold font-display text-white flex items-center gap-2">
-                <Brain className="w-6 h-6 text-brand-400" />
+                <Brain className="w-6 h-6 text-brand-500" />
                 <span>5-Minute Guided Mindfulness Exercise</span>
               </h2>
               <button
                 onClick={loadMindfulnessExercise}
                 disabled={exerciseLoading}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
+                className="p-2 rounded-lg bg-dark-900 hover:bg-dark-700 border border-dark-700"
               >
                 <RefreshCw className={`w-4 h-4 ${exerciseLoading ? 'animate-spin' : ''}`} />
               </button>
@@ -101,23 +105,23 @@ export default function WellnessPage() {
           </div>
 
           {/* India Helpline Directory (Supportive & Urgent) */}
-          <div className="card-glass border-rose-500/20 bg-rose-950/20 space-y-4">
-            <h3 className="text-lg font-bold font-display text-rose-300 flex items-center gap-2">
-              <PhoneCall className="w-5 h-5 text-rose-400" />
+          <div className="card-glass border-brand-500/30 bg-brand-500/10 space-y-4">
+            <h3 className="text-lg font-bold font-display text-brand-500 flex items-center gap-2">
+              <PhoneCall className="w-5 h-5 text-brand-500" />
               <span>Maternal Mental Health Helplines (India)</span>
             </h3>
             <p className="text-xs text-white/60">
               Motherhood comes with severe changes. If you are experiencing persistent sadness, extreme anxiety, or feelings of despair, help is just a phone call away.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <div className="p-3 rounded-lg bg-dark-900 border border-dark-700">
                 <h4 className="font-semibold text-white text-sm">iCall (TISS Helpline)</h4>
-                <p className="text-lg font-bold text-brand-300 mt-1">9152987821</p>
+                <p className="text-lg font-bold text-brand-500 mt-1">9152987821</p>
                 <span className="text-xs text-white/40">Mon - Sat, 8:00 AM - 10:00 PM</span>
               </div>
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <div className="p-3 rounded-lg bg-dark-900 border border-dark-700">
                 <h4 className="font-semibold text-white text-sm">NIMHANS Helpline</h4>
-                <p className="text-lg font-bold text-brand-300 mt-1">080-46110007</p>
+                <p className="text-lg font-bold text-brand-500 mt-1">080-46110007</p>
                 <span className="text-xs text-white/40">Available 24/7 (Free Govt Service)</span>
               </div>
             </div>
@@ -126,9 +130,9 @@ export default function WellnessPage() {
 
         {/* Right column: Wellness Companion Chat */}
         <div className="space-y-6">
-          <div className="card-glass border-white/10 space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-white/10 pb-4">
-              <Sparkles className="w-5 h-5 text-brand-400" />
+          <div className="card-glass border-dark-700 space-y-4">
+            <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-dark-700 pb-4">
+              <Sparkles className="w-5 h-5 text-brand-500" />
               <span>Emotional Wellbeing</span>
             </div>
             <p className="text-xs text-white/60">
@@ -136,15 +140,15 @@ export default function WellnessPage() {
             </p>
 
             {answer ? (
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm max-h-[300px] overflow-y-auto space-y-2">
-                <div className="flex items-center justify-between text-xs text-white/40 border-b border-white/5 pb-1">
+              <div className="p-4 rounded-xl bg-dark-900 border border-dark-700 text-sm max-h-[300px] overflow-y-auto space-y-2">
+                <div className="flex items-center justify-between text-xs text-white/40 border-b border-dark-700 pb-1">
                   <span>Wellness Agent</span>
                   <span>Validated Guidance</span>
                 </div>
                 <div className="text-white/80 prose-mamaverse text-xs md:text-sm" dangerouslySetInnerHTML={{ __html: answer.replace(/\n/g, '<br />') }} />
               </div>
             ) : (
-              <div className="p-8 rounded-xl bg-white/5 border border-dashed border-white/10 text-center text-white/40 text-xs">
+              <div className="p-8 rounded-xl bg-dark-900 border border-dashed border-dark-700 text-center text-white/40 text-xs">
                 Speak to the agent about postpartum fatigue, balancing home & baby, or relationship transitions.
               </div>
             )}

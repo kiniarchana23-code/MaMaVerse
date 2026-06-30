@@ -21,10 +21,14 @@ export default function NutritionPage() {
   const [queryLoading, setQueryLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
+    if (!isLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (!profile) {
+        router.push('/onboarding');
+      }
     }
-  }, [user, isLoading, router]);
+  }, [user, profile, isLoading, router]);
 
   const loadMealPlan = async () => {
     setPlanLoading(true);
@@ -73,13 +77,13 @@ export default function NutritionPage() {
         
         {/* Meal Plan display */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="card-glass border-white/10 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="card-glass border-dark-700 space-y-4">
+            <div className="flex items-center justify-between border-b border-dark-700 pb-4">
               <h2 className="text-xl font-bold font-display text-white flex items-center gap-2">
-                <Salad className="w-6 h-6 text-brand-400" />
+                <Salad className="w-6 h-6 text-brand-500" />
                 <span>Personalized 7-Day Indian Diet Plan</span>
               </h2>
-              <span className="text-xs uppercase px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 font-bold border border-brand-500/20">
+              <span className="text-xs uppercase px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-bold border border-brand-500/20">
                 {dietPref}
               </span>
             </div>
@@ -104,9 +108,9 @@ export default function NutritionPage() {
 
         {/* Nutrition AI assistant */}
         <div className="space-y-6">
-          <div className="card-glass border-white/10 space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-white/10 pb-4">
-              <Sparkles className="w-5 h-5 text-brand-400" />
+          <div className="card-glass border-dark-700 space-y-4">
+            <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-dark-700 pb-4">
+              <Sparkles className="w-5 h-5 text-brand-500" />
               <span>Nutrition Assistant</span>
             </div>
             <p className="text-xs text-white/60">
@@ -114,15 +118,15 @@ export default function NutritionPage() {
             </p>
 
             {answer ? (
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm max-h-[300px] overflow-y-auto space-y-2">
-                <div className="flex items-center justify-between text-xs text-white/40 border-b border-white/5 pb-1">
+              <div className="p-4 rounded-xl bg-dark-900 border border-dark-700 text-sm max-h-[300px] overflow-y-auto space-y-2">
+                <div className="flex items-center justify-between text-xs text-white/40 border-b border-dark-700 pb-1">
                   <span>Nutrition Agent</span>
                   <span>Grounded in ICMR-NIN</span>
                 </div>
                 <div className="text-white/80 prose-mamaverse text-xs md:text-sm" dangerouslySetInnerHTML={{ __html: answer.replace(/\n/g, '<br />') }} />
               </div>
             ) : (
-              <div className="p-8 rounded-xl bg-white/5 border border-dashed border-white/10 text-center text-white/40 text-xs">
+              <div className="p-8 rounded-xl bg-dark-900 border border-dashed border-dark-700 text-center text-white/40 text-xs">
                 Ask about pregnancy dietary restrictions, milk supply recipes, or ragi preparations.
               </div>
             )}

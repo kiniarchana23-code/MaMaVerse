@@ -65,7 +65,7 @@ export default function LoginPage() {
       <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-brand-500/10 blur-[100px] pointer-events-none animate-float"></div>
       <div className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-rose-500/10 blur-[100px] pointer-events-none animate-float" style={{ animationDelay: '2s' }}></div>
 
-      <div className="w-full max-w-md card-glass border-white/10 z-10 relative">
+      <div className="w-full max-w-md card-glass border-dark-700 z-10 relative">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center shadow-glow-brand mb-4 animate-pulse-soft">
             <Heart className="w-8 h-8 text-white" />
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
         <div className="space-y-6">
           {/* Main Access Card */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-4">
+          <div className="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-4">
             <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider flex items-center gap-2">
               <Activity className="w-4 h-4 text-brand-400" /> Choose Access Method
             </h2>
@@ -116,15 +116,15 @@ export default function LoginPage() {
           </div>
 
           <div className="relative flex py-2 items-center">
-            <div className="flex-grow border-t border-white/10"></div>
+            <div className="flex-grow border-t border-dark-700"></div>
             <span className="flex-shrink mx-4 text-xs text-white/40 uppercase tracking-widest">Or</span>
-            <div className="flex-grow border-t border-white/10"></div>
+            <div className="flex-grow border-t border-dark-700"></div>
           </div>
 
           <button
             onClick={handleGuestLogin}
             disabled={loading}
-            className="w-full btn-secondary py-3 flex items-center justify-center gap-2 text-sm font-semibold border-white/10 hover:border-white/20"
+            className="w-full btn-secondary py-3 flex items-center justify-center gap-2 text-sm font-semibold border-dark-700 hover:border-dark-600"
           >
             <span>Continue as Guest</span>
             <ArrowRight className="w-4 h-4" />

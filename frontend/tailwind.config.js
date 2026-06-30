@@ -8,55 +8,39 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // MaMaVerse brand palette — warm, nurturing, premium
+        // MaMaVerse sleek premium palette (Netflix/Instagram Dark Mode Inspired)
         brand: {
-          50:  '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f3d0fe',
-          300: '#e9a8fd',
-          400: '#d876f9',
-          500: '#c44fed',  // Primary purple
-          600: '#a72fd4',
-          700: '#8b22b0',
-          800: '#73218f',
-          900: '#5f1d74',
-          950: '#3e0a52',
-        },
-        rose: {
           50:  '#fff1f2',
           100: '#ffe4e6',
           200: '#fecdd3',
           300: '#fda4af',
           400: '#fb7185',
-          500: '#f43f5e',  // Accent pink
+          500: '#e50914', // Netflix Red / Vibrant Accent
           600: '#e11d48',
           700: '#be123c',
           800: '#9f1239',
           900: '#881337',
+          950: '#4c0519',
+        },
+        dark: {
+          900: '#000000', // Pure black background
+          800: '#141414', // Netflix dark gray for cards
+          700: '#262626', // Borders
+          600: '#404040',
+          500: '#737373',
+        },
+        // Kept for backward compatibility
+        rose: {
+          400: '#fb7185',
+          500: '#f43f5e',
         },
         peach: {
-          50:  '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
           400: '#fb923c',
           500: '#f97316',
         },
         sage: {
-          50:  '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
           400: '#4ade80',
           500: '#22c55e',
-        },
-        // Dark theme
-        dark: {
-          900: '#0d0618',
-          800: '#170b2b',
-          700: '#220f3d',
-          600: '#2e1454',
-          500: '#3b1a6b',
         },
       },
       fontFamily: {
@@ -64,47 +48,42 @@ module.exports = {
         display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-brand': 'linear-gradient(135deg, #c44fed 0%, #f43f5e 100%)',
-        'gradient-soft': 'linear-gradient(135deg, #fdf4ff 0%, #fff1f2 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #0d0618 0%, #170b2b 50%, #220f3d 100%)',
-        'gradient-card': 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        'gradient-brand': 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #000000 0%, #141414 100%)',
+        'gradient-card': 'linear-gradient(145deg, #181818 0%, #121212 100%)',
       },
       animation: {
-        'fade-in': 'fadeIn 0.6s ease-out',
-        'slide-up': 'slideUp 0.5s ease-out',
+        'fade-in': 'fadeIn 0.4s ease-out',
+        'slide-up': 'slideUp 0.4s ease-out',
         'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
-        'float': 'float 6s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
+        'float': 'float 6s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '0%': { opacity: '0', transform: 'translateY(15px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         pulseSoft: {
           '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.7' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '50%': { opacity: '0.8' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-1000px 0' },
           '100%': { backgroundPosition: '1000px 0' },
         },
-      },
-      backdropBlur: {
-        xs: '2px',
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        }
       },
       boxShadow: {
-        'glow-brand': '0 0 30px rgba(196, 79, 237, 0.3)',
-        'glow-rose': '0 0 30px rgba(244, 63, 94, 0.3)',
-        'glass': '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2)',
+        'glow-brand': '0 4px 20px rgba(229, 9, 20, 0.4)',
+        'glass': '0 4px 20px rgba(0, 0, 0, 0.5)',
       },
     },
   },
