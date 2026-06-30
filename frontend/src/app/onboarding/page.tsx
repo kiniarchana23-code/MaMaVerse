@@ -229,6 +229,18 @@ export default function OnboardingPage() {
           >
             {loading ? 'Creating Profile...' : 'Enter MaMaVerse'}
           </button>
+
+          <button
+            type="button"
+            onClick={async () => {
+              const { signOutUser } = await import('@/lib/firebase');
+              await signOutUser();
+              window.location.href = '/login';
+            }}
+            className="w-full text-center text-xs text-white/40 hover:text-white/60 transition-colors mt-4 block"
+          >
+            Sign Out / Choose Another Account
+          </button>
         </form>
       </div>
     </main>
