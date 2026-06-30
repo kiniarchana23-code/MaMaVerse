@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MaMaVerse — Project Submission Writeup (Agent for Good)</title>
+  <style>
+    :root {
+      --bg-color: #09090b;
+      --card-bg: #18181b;
+      --border-color: #27272a;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --accent: #f59e0b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: var(--text-main);
+      margin-bottom: 5px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .meta-badge {
+      display: inline-block;
+      background: rgba(13, 148, 136, 0.2);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-top: 40px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      color: var(--accent);
+      margin-top: 20px;
+    }
+
+    p, li {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Andale Mono", monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    pre {
+      background: #09090b;
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    .alert {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .alert p {
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--border-color);
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MaMaVerse: Responsible, Medically Curated AI Assistance for Pregnancy & Parenthood</h1>
+    <div class="subtitle">Deployed Architecture and Agentic Ecosystem for the "Agent for Good" Submission Track</div>
+    <div class="meta-badge">Track: Agent for Good</div>
+
+    <div class="alert">
+      <p><strong>Note for Reviewers:</strong> This submission presents a fully functional production platform deployed in Mumbai (asia-south1) on Google Cloud Run, integrating Google Gemini 2.5 models and Cloud Firestore. It is designed around safety-first guidelines (WHO, ICMR-NIN, and AAP) under a Human-in-the-Loop review flow.</p>
+    </div>
+
+    <h2>1. Problem Definition & Vision</h2>
+    <h3>1.1 The Maternal Information Crisis</h3>
+    <p>For pregnant women and new mothers, the transition into parenthood is accompanied by a massive influx of physical, psychological, and dietary changes. Sifting through search engines, parenting blogs, and social video platforms leads to three severe issues:</p>
+    <ul>
+      <li><strong>Anxiety and Overwhelm:</strong> Conflicting advice on minor symptoms causes unnecessary stress and anxiety during a delicate biological period.</li>
+      <li><strong>Unverified & Dangerous Advice:</strong> Search algorithms prioritize engagement over medical validity, exposing mothers to unsafe home remedies, unscientific diets, or outdated sleep practices.</li>
+      <li><strong>Lack of Personalization:</strong> A mother at week 12 of pregnancy requires completely different nutritional, test, and wellness recommendations compared to a mother at week 36 or a new mom with a 3-month-old infant.</li>
+    </ul>
+
+    <h3>1.2 Vision: The "Agent for Good" Grounding</h3>
+    <p>To solve this, MaMaVerse establishes a <strong>Responsible AI Pipeline</strong> that ensures zero unverified content reaches the user:</p>
+    <ul>
+      <li><strong>Medical Sourcing:</strong> AI ingestion is restricted to reputable domains (WHO, ICMR-NIN, NHS, AAP, CDC).</li>
+      <li><strong>Strict Admin Validation:</strong> AI-generated article drafts must be reviewed, edited, and approved by a human administrator in the Admin Portal before they are published to the database.</li>
+      <li><strong>Phase-Specific Personalization:</strong> Specialized agents adapt weekly and monthly summaries, custom vegetarian/vegan diet plans, and wellness guidelines to the exact week of pregnancy or child's age.</li>
+    </ul>
+
+    <hr>
+
+    <h2>2. Solution Design & System Architecture</h2>
+    <p>MaMaVerse is built on a clean, decoupled, containerized client-server architecture:</p>
+    <pre><code>                    ┌───────────────────────────────────┐
+                    │      Next.js Client Frontend      │
+                    │       (Framer Motion / CSS)       │
+                    └─────────────────┬─────────────────┘
+                                      │
+                                      │ Secure REST APIs (HTTPS)
+                                      ▼
+                    ┌───────────────────────────────────┐
+                    │     FastAPI Server Container      │
+                    │      (Pydantic / SlowAPI)         │
+                    └─────────────────┬─────────────────┘
+                                      │
+            ┌─────────────────────────┼─────────────────────────┐
+            │                         │                         │
+            ▼                         ▼                         ▼
+┌───────────────────────┐ ┌───────────────────────┐ ┌───────────────────────┐
+│ Firebase Auth Service │ │ Firestore DB Instance │ │ Google Gemini API     │
+│     (Google OAuth)    │ │   (Native Database)   │ │  (2.5 Flash / Pro)    │
+└───────────────────────┘ └───────────────────────┘ └───────────────────────┘</code></pre>
+
+    <h3>2.1 Backend Pipeline (FastAPI)</h3>
+    <p>The backend is written in Python using <strong>FastAPI</strong> for high performance and automatic OpenAPI schema generation. It uses <strong>Pydantic</strong> for rigid input validation and <strong>SlowAPI</strong> for client-specific rate limiting to protect API endpoints from abuse.</p>
+
+    <h3>2.2 Frontend Client (Next.js 14)</h3>
+    <p>The user interface is built on Next.js 14 utilizing React 18, vanilla CSS, and <strong>Framer Motion</strong> for premium, fluid layout transitions. It includes:</p>
+    <ul>
+      <li><strong>Authentication Hub:</strong> Seamless Google Sign-In and a frictionless Guest Mode.</li>
+      <li><strong>Personalization Wizard:</strong> A responsive slider enabling users to choose their current phase (pregnancy week or baby age in months) and dietary preferences (Vegetarian, Non-Vegetarian, Vegan).</li>
+      <li><strong>Dynamic Dashboard:</strong> Displays published, medically-sourced articles matching the user's phase.</li>
+      <li><strong>AI Chat Interface:</strong> Interactive chat pane letting users query specific agents (Pregnancy, New Mom, Nutrition, Wellness, Healthcare, Admin).</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Specialized Multi-Agent Ecosystem</h2>
+    <p>The core value of MaMaVerse lies in its network of <strong>Specialized AI Agents</strong>, each given distinct system prompts, medical context parameters, and temperature configurations to excel at their respective domains:</p>
+    <ul>
+      <li><strong>Pregnancy Knowledge Agent:</strong> Guides expecting mothers through fetal development, trimester-specific symptoms, and prenatal tests. Metaphors are used to describe fetal growth (e.g. week 12 is a lemon).</li>
+      <li><strong>New Mom Agent:</strong> Guides postpartum recovery, breastfeeding, vaccination schedules, and safe newborn sleep (preventing SIDS).</li>
+      <li><strong>Nutrition Agent:</strong> Creates custom 7-day Indian meal plans grounded in <strong>ICMR-NIN</strong> guidelines.</li>
+      <li><strong>Wellness Agent:</strong> Supports mental wellness with breathing exercises and postpartum crisis hotlines.</li>
+      <li><strong>Healthcare Discovery Agent:</strong> Connects to the <strong>Google Places API</strong> to search local pediatricians/gynecologists by city name.</li>
+      <li><strong>Admin Ingestion Agent:</strong> Ingests new medical URLs, analyzes duplicate risk, and prepares drafts for human review.</li>
+    </ul>
+
+    <hr>
+
+    <h2>4. Implementation Quality, Security & Privacy</h2>
+    <h3>4.1 Security & RBAC</h3>
+    <p>Firebase Auth is integrated with backend verification. Admin actions are secured with custom claims (`role: admin`). Guest profiles are kept strictly in browser `sessionStorage` for absolute user privacy.</p>
+
+    <h3>4.2 In-Memory Database Sorting</h3>
+    <p>To avoid complex Firestore composite indexes, Python performs document sorting and pagination in-memory. This guarantees high uptime, easy database maintenance, and fast response times.</p>
+
+    <h3>4.3 Hydration Resilience</h3>
+    <p>Firebase module initialization is safely wrapped in a try-catch interface. This, paired with a 3-second safety timer in <code>AuthContext</code> and a route guard in Axios response interceptor, completely prevents client-side rendering crashes and redirect loops.</p>
+
+    <hr>
+
+    <h2>5. Overall User Value & Project Story</h2>
+    <p>MaMaVerse represents a secure, functional blueprint of how AI agents can support society. By combining rigorous Human-in-the-Loop review, localized nutrition guides, and a highly responsive UX, MaMaVerse empowers expecting parents with the safe information they need, when they need it most.</p>
+
+    <hr>
+
+    <h2>6. Public Code Repository & Detailed Setup Instructions</h2>
+    <h3>6.1 GitHub Repository Link</h3>
+    <p>The complete codebase for both the Next.js frontend, FastAPI backend, and deployment automation configurations is publicly available at:<br>
+    👉 <strong><a href="https://github.com/kiniarchana23-code/MaMaVerse" style="color: var(--primary);">GitHub Code Repository: MaMaVerse</a></strong></p>
+
+    <h3>6.2 Live Deployed Endpoints</h3>
+    <ul>
+      <li><strong>Frontend Client:</strong> <a href="https://mamaverse-frontend-983146308842.asia-south1.run.app" style="color: var(--primary);">https://mamaverse-frontend-983146308842.asia-south1.run.app</a></li>
+      <li><strong>Backend REST API:</strong> <a href="https://mamaverse-backend-983146308842.asia-south1.run.app" style="color: var(--primary);">https://mamaverse-backend-983146308842.asia-south1.run.app</a></li>
+    </ul>
+
+    <h3>6.3 Detailed Local Setup Instructions</h3>
+    
+    <h4>🛠️ Prerequisites</h4>
+    <p>Before starting, ensure you have:</p>
+    <ul>
+      <li>Node.js (v18.0.0 or higher)</li>
+      <li>Python (v3.12.0 or higher)</li>
+      <li>A Google Cloud Platform (GCP) project with billing and Firestore enabled.</li>
+    </ul>
+
+    <h4>1️⃣ Clone the Repository</h4>
+    <pre><code>git clone https://github.com/kiniarchana23-code/MaMaVerse.git
+cd MaMAVerse</code></pre>
+
+    <h4>2️⃣ Backend Configuration & Execution</h4>
+    <ol>
+      <li>Navigate into the <code>backend/</code> directory:
+        <pre><code>cd backend</code></pre>
+      </li>
+      <li>Create a virtual environment and activate it:
+        <pre><code>python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate</code></pre>
+      </li>
+      <li>Install all Python dependencies:
+        <pre><code>pip install -r requirements.txt</code></pre>
+      </li>
+      <li>Create a <code>.env</code> file in the <code>backend/</code> directory:
+        <pre><code>ENV=development
+GCP_PROJECT_ID=project-7e1f15c5-7bea-42ce-ad3
+FIREBASE_PROJECT_ID=project-7e1f15c5-7bea-42ce-ad3
+GEMINI_API_KEY=your_gemini_api_key
+GOOGLE_PLACES_API_KEY=AIzaSyCIoMtjwOm1-OZobCYc5EqpfZARLH-GZXg</code></pre>
+      </li>
+      <li>Launch the FastAPI server using Uvicorn:
+        <pre><code>uvicorn main:app --reload --port 8000</code></pre>
+      </li>
+    </ol>
+
+    <h4>3️⃣ Frontend Configuration & Execution</h4>
+    <ol>
+      <li>Open a new terminal session and navigate into the <code>frontend/</code> directory:
+        <pre><code>cd frontend</code></pre>
+      </li>
+      <li>Install all node modules:
+        <pre><code>npm install</code></pre>
+      </li>
+      <li>Create a <code>.env.local</code> file in the <code>frontend/</code> directory:
+        <pre><code>NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDK97NUGrp1QG9ao3HmTr0izbtcdRP0Xuk
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=project-7e1f15c5-7bea-42ce-ad3.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=project-7e1f15c5-7bea-42ce-ad3
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=project-7e1f15c5-7bea-42ce-ad3.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=983146308842
+NEXT_PUBLIC_FIREBASE_APP_ID=1:983146308842:web:c8c50e417ff2497fc38891</code></pre>
+      </li>
+      <li>Start the Next.js development server:
+        <pre><code>npm run dev</code></pre>
+      </li>
+    </ol>
+  </div>
+</body>
+</html>
