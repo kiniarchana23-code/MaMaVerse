@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { signInWithGoogle, signInAsGuest } from '@/lib/firebase';
@@ -10,16 +10,26 @@ import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [subscribeNews, setSubscribeNews] = useState(true);
 
   // If already logged in, redirect to onboarding or dashboard
-  React.useEffect(() => {
-    if (user) {
+  // Wait for auth to finish loading before redirecting to avoid flicker
+  useEffect(() => {
+    if (!authLoading && user) {
       router.push('/onboarding');
     }
-  }, [user, router]);
+  }, [user, authLoading, router]);
+
+  // Show blank while auth initializes
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-900">
+        <div className="skeleton w-12 h-12 rounded-full"></div>
+      </div>
+    );
+  }
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -95,7 +105,7 @@ export default function LoginPage() {
                 className="mt-0.5 h-4 w-4 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
               />
               <label htmlFor="subscribe" className="cursor-pointer leading-tight">
-                <strong>Subscribe to updates & newsletter</strong>
+                <strong>Subscribe to updates & newsletter <span className="text-white/40 text-[10px] font-normal uppercase ml-1">(Optional)</span></strong>
                 <span className="block mt-0.5 text-white/50">Receive notifications when new validated medical articles are added.</span>
               </label>
             </div>

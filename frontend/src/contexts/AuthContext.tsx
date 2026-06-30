@@ -52,19 +52,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        const adminStatus = await getIsAdmin();
-        setIsAdmin(adminStatus);
-        await refreshProfile();
-      } else {
-        setProfile(null);
-        setIsAdmin(false);
+    // Safety fallback: force loading to end after 3 seconds under any condition
+    const safetyTimeout = setTimeout(() => {
+      setIsLoading((prev) => {
+        if (prev) {
+          console.warn('Auth initialization timed out, forcing isLoading to false.');
+          return false;
+        }
+        return prev;
+      });
+    }, 3000);
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
+      try {
+        setUser(firebaseUser);
+        if (firebaseUser) {
+          try {
+            const adminStatus = await getIsAdmin();
+            setIsAdmin(adminStatus);
+          } catch (err) {
+            console.error('Failed to get admin status:', err);
+            setIsAdmin(false);
+          }
+          await refreshProfile();
+        } else {
+          setProfile(null);
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.error('Auth state change error:', err);
+      } finally {
+        setIsLoading(false);
+        clearTimeout(safetyTimeout);
       }
-      setIsLoading(false);
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribe();
+      clearTimeout(safetyTimeout);
+    };
   }, [refreshProfile]);
 
   const isGuest = user?.isAnonymous ?? false;

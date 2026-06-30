@@ -21,6 +21,19 @@ async def get_articles(
         baby_age_months=baby_age_months,
         limit=limit,
     )
+    # Filter by week/age in-memory (Firestore array-contains limitation)
+    if pregnancy_week is not None:
+        articles = [
+            a for a in articles
+            if a.get("pregnancy_weeks") is None
+            or pregnancy_week in (a.get("pregnancy_weeks") or [])
+        ]
+    if baby_age_months is not None:
+        articles = [
+            a for a in articles
+            if a.get("baby_age_months") is None
+            or baby_age_months in (a.get("baby_age_months") or [])
+        ]
     return {
         "articles": articles,
         "count": len(articles),
@@ -29,3 +42,6 @@ async def get_articles(
             "Consult your healthcare provider for medical advice."
         ),
     }
+
+
+

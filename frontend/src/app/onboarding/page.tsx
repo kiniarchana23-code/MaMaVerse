@@ -9,21 +9,31 @@ import toast from 'react-hot-toast';
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile, isLoading: authLoading } = useAuth();
   
   const [userType, setUserType] = useState<'pregnant' | 'new_mom' | null>(null);
   const [pregnancyWeek, setPregnancyWeek] = useState<number>(12);
   const [babyAgeMonths, setBabyAgeMonths] = useState<number | ''>('');
   const [dietaryPref, setDietaryPref] = useState<'vegetarian' | 'non_vegetarian' | 'vegan'>('vegetarian');
+  const [saveProfile, setSaveProfile] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Wait for auth to settle before redirecting to prevent flicker
+    if (authLoading) return;
     if (!user) {
       router.push('/login');
     } else if (profile) {
+      // Has a saved server profile → go straight to dashboard
       router.push('/dashboard');
+    } else {
+      // Check if a temp session profile already exists (guest chose not to save)
+      const tempProfile = sessionStorage.getItem('temp_profile');
+      if (tempProfile) {
+        router.push('/dashboard');
+      }
     }
-  }, [user, profile, router]);
+  }, [user, profile, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,15 +53,27 @@ export default function OnboardingPage() {
     }
 
     try {
-      await profileApi.create({
-        user_type: userType,
-        pregnancy_week: userType === 'pregnant' ? pregnancyWeek : null,
-        baby_birth_date: babyBirthDate,
-        dietary_preference: dietaryPref,
-        is_subscribed: !user?.isAnonymous,
-      });
-      toast.success('Profile created successfully! Welcome to MaMaVerse.');
-      await refreshProfile();
+      if (saveProfile) {
+        await profileApi.create({
+          user_type: userType,
+          pregnancy_week: userType === 'pregnant' ? pregnancyWeek : null,
+          baby_birth_date: babyBirthDate,
+          dietary_preference: dietaryPref,
+          is_subscribed: !user?.isAnonymous,
+        });
+        toast.success('Profile created successfully! Welcome to MaMaVerse.');
+        await refreshProfile();
+      } else {
+        // Save temporary profile without creating it in the backend
+        sessionStorage.setItem('temp_profile', JSON.stringify({
+          user_type: userType,
+          pregnancy_week: userType === 'pregnant' ? pregnancyWeek : null,
+          baby_birth_date: babyBirthDate,
+          dietary_preference: dietaryPref,
+          email: user?.email
+        }));
+        toast.success('Continuing without saving profile.');
+      }
       router.push('/dashboard');
     } catch (err: any) {
       console.error(err);
@@ -61,7 +83,7 @@ export default function OnboardingPage() {
     }
   };
 
-  if (!user || profile) {
+  if (authLoading || !user || profile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-900 text-white">
         <div className="skeleton w-12 h-12 rounded-full"></div>
@@ -187,12 +209,25 @@ export default function OnboardingPage() {
             </div>
           </div>
 
+          <div className="flex items-center gap-3 mt-8">
+            <input
+              id="save-profile"
+              type="checkbox"
+              checked={saveProfile}
+              onChange={(e) => setSaveProfile(e.target.checked)}
+              className="h-4 w-4 rounded border-dark-700 text-brand-600 focus:ring-brand-500 bg-dark-900"
+            />
+            <label htmlFor="save-profile" className="text-sm text-white/80 cursor-pointer">
+              Save this profile to my account (Optional)
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={loading || !userType}
-            className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-base font-bold shadow-glow-brand mt-8"
+            className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-base font-bold shadow-glow-brand mt-4"
           >
-            {loading ? 'Creating Profile...' : 'Save Profile & Enter MaMaVerse'}
+            {loading ? 'Creating Profile...' : 'Enter MaMaVerse'}
           </button>
         </form>
       </div>

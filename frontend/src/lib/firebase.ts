@@ -24,11 +24,33 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase (idempotent)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app: any;
+let auth: any;
+let db: any;
+let onAuthStateChangedWrapper: any;
 const googleProvider = new GoogleAuthProvider();
+
+try {
+  if (!firebaseConfig.apiKey) {
+    console.error('Firebase API Key is missing in environment variables!');
+  }
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  auth = getAuth(app);
+  db = getFirestore(app);
+  onAuthStateChangedWrapper = onAuthStateChanged;
+} catch (err) {
+  console.error('Firebase initialization failed:', err);
+  // Fallbacks to avoid crashing imports
+  auth = {
+    currentUser: null,
+  };
+  db = {};
+  onAuthStateChangedWrapper = (authInstance: any, callback: any) => {
+    // Immediately call callback with null to trigger unauthenticated state
+    setTimeout(() => callback(null), 50);
+    return () => {};
+  };
+}
 
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
@@ -51,13 +73,13 @@ export async function signOutUser(): Promise<void> {
 }
 
 export async function getIdToken(): Promise<string | null> {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
   if (!user) return null;
   return user.getIdToken();
 }
 
 export async function getIsAdmin(): Promise<boolean> {
-  const user = auth.currentUser;
+  const user = auth?.currentUser;
   if (!user) return false;
   const tokenResult = await user.getIdTokenResult();
   return tokenResult.claims.role === 'admin';
@@ -84,5 +106,5 @@ export async function requestNotificationPermission(): Promise<string | null> {
   }
 }
 
-export { auth, db, onAuthStateChanged };
+export { auth, db, onAuthStateChangedWrapper as onAuthStateChanged };
 export type { User };

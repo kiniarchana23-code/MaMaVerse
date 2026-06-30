@@ -29,7 +29,7 @@ export default function DashboardPage() {
     if (!isLoading) {
       if (!user) {
         router.push('/login');
-      } else if (!profile) {
+      } else if (!profile && !sessionStorage.getItem('temp_profile')) {
         router.push('/onboarding');
       }
     }
@@ -37,12 +37,14 @@ export default function DashboardPage() {
 
   // Sync user profile state
   useEffect(() => {
-    if (profile) {
-      if (profile.user_type === 'pregnant') {
-        setActiveWeekOrMonth(profile.pregnancy_week || 12);
+    const activeProfile = profile || (typeof window !== 'undefined' && sessionStorage.getItem('temp_profile') ? JSON.parse(sessionStorage.getItem('temp_profile')!) : null);
+    
+    if (activeProfile) {
+      if (activeProfile.user_type === 'pregnant') {
+        setActiveWeekOrMonth(activeProfile.pregnancy_week || 12);
         setAgentType('pregnancy');
       } else {
-        setActiveWeekOrMonth(profile.baby_age_months || 0);
+        setActiveWeekOrMonth(activeProfile.baby_age_months || 0);
         setAgentType('newmom');
       }
     }
@@ -50,10 +52,11 @@ export default function DashboardPage() {
 
   // Load week summary or month guide
   const loadPhaseSummary = useCallback(async (val: number) => {
-    if (!profile) return;
+    const activeProfile = profile || (typeof window !== 'undefined' && sessionStorage.getItem('temp_profile') ? JSON.parse(sessionStorage.getItem('temp_profile')!) : null);
+    if (!activeProfile) return;
     setSummaryLoading(true);
     try {
-      if (profile.user_type === 'pregnant') {
+      if (activeProfile.user_type === 'pregnant') {
         const res = await agentApi.getPregnancyWeek(val);
         setSummaryData(res.data);
       } else {
@@ -70,14 +73,15 @@ export default function DashboardPage() {
 
   // Load curated knowledge base articles for current category
   const loadCuratedArticles = useCallback(async () => {
-    if (!profile) return;
+    const activeProfile = profile || (typeof window !== 'undefined' && sessionStorage.getItem('temp_profile') ? JSON.parse(sessionStorage.getItem('temp_profile')!) : null);
+    if (!activeProfile) return;
     setArticlesLoading(true);
     try {
-      const category = profile.user_type === 'pregnant' ? 'pregnancy' : 'newborn';
+      const category = activeProfile.user_type === 'pregnant' ? 'pregnancy' : 'newborn';
       const res = await contentApi.getArticles({
         category,
-        pregnancy_week: profile.user_type === 'pregnant' ? activeWeekOrMonth : undefined,
-        baby_age_months: profile.user_type === 'new_mom' ? activeWeekOrMonth : undefined,
+        pregnancy_week: activeProfile.user_type === 'pregnant' ? activeWeekOrMonth : undefined,
+        baby_age_months: activeProfile.user_type === 'new_mom' ? activeWeekOrMonth : undefined,
       });
       setArticles(res.data.articles || []);
     } catch (err) {
@@ -88,7 +92,8 @@ export default function DashboardPage() {
   }, [profile, activeWeekOrMonth]);
 
   useEffect(() => {
-    if (profile) {
+    const activeProfile = profile || (typeof window !== 'undefined' && sessionStorage.getItem('temp_profile') ? JSON.parse(sessionStorage.getItem('temp_profile')!) : null);
+    if (activeProfile) {
       loadPhaseSummary(activeWeekOrMonth);
       loadCuratedArticles();
     }
@@ -111,7 +116,9 @@ export default function DashboardPage() {
     }
   };
 
-  if (isLoading || !profile) {
+  const activeProfile = profile || (typeof window !== 'undefined' && sessionStorage.getItem('temp_profile') ? JSON.parse(sessionStorage.getItem('temp_profile')!) : null);
+
+  if (isLoading || !activeProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-900 text-white">
         <div className="flex flex-col items-center gap-2">
@@ -122,7 +129,7 @@ export default function DashboardPage() {
     );
   }
 
-  const isPreg = profile.user_type === 'pregnant';
+  const isPreg = activeProfile.user_type === 'pregnant';
 
   return (
     <div className="min-h-screen bg-dark-900 pb-12 mesh-bg">
@@ -140,7 +147,7 @@ export default function DashboardPage() {
                 Medically Curated
               </span>
               <h2 className="text-2xl font-bold font-display mt-2">
-                Hello, {profile.email?.split('@')[0] || 'Mom'} ✨
+                Hello, {user?.displayName?.split(' ')[0] || activeProfile.email?.split('@')[0] || 'Mom'} ✨
               </h2>
               <p className="text-white/80 text-sm mt-1">
                 {isPreg 

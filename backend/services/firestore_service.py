@@ -89,8 +89,6 @@ async def get_pending_articles(limit: int = 50) -> List[dict]:
     query = (
         db.collection(ARTICLES_COL)
         .where(filter=FieldFilter("status", "==", "pending_review"))
-        .order_by("submitted_at", direction=firestore.Query.DESCENDING)
-        .limit(limit)
     )
     docs = query.stream()
     results = []
@@ -98,7 +96,13 @@ async def get_pending_articles(limit: int = 50) -> List[dict]:
         d = doc.to_dict()
         d["id"] = doc.id
         results.append(d)
-    return results
+
+    # Sort in-memory
+    results.sort(
+        key=lambda x: x.get("submitted_at") or datetime.min.replace(tzinfo=timezone.utc),
+        reverse=True
+    )
+    return results[:limit]
 
 
 async def get_published_articles(
@@ -114,13 +118,18 @@ async def get_published_articles(
     )
     if category:
         query = query.where(filter=FieldFilter("category", "==", category))
-    query = query.order_by("published_at", direction=firestore.Query.DESCENDING).limit(limit)
-
     results = []
     async for doc in query.stream():
         d = doc.to_dict()
         d["id"] = doc.id
         results.append(d)
+
+    # Sort in-memory to avoid requiring composite indexes in Firestore
+    results.sort(
+        key=lambda x: x.get("published_at") or datetime.min.replace(tzinfo=timezone.utc),
+        reverse=True
+    )
+    results = results[:limit]
 
     # Filter by week/age in-memory (Firestore array-contains limitation)
     if pregnancy_week is not None:

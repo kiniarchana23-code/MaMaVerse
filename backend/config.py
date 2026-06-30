@@ -22,8 +22,8 @@ class Settings(BaseSettings):
 
     # Gemini API
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
-    GEMINI_PRO_MODEL: str = "gemini-1.5-pro"
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_PRO_MODEL: str = "gemini-2.5-pro"
 
     # Firestore
     FIRESTORE_DATABASE: str = "(default)"
@@ -31,11 +31,12 @@ class Settings(BaseSettings):
     # Google Places API (Healthcare Discovery)
     GOOGLE_PLACES_API_KEY: str = ""
 
-    # CORS
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
         "https://mamaverse.web.app",
-        "https://mamaverse-frontend-*.run.app",
+        "https://mamaverse-frontend-983146308842.asia-south1.run.app",
+        "https://maverse.com",
+        "https://www.maverse.com",
     ]
 
     # Rate Limiting
