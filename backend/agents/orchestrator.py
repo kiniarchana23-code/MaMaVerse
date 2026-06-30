@@ -64,7 +64,7 @@ Respond with ONLY the agent name (one word).
 """
         model = genai.GenerativeModel(settings.GEMINI_MODEL)
         response = await model.generate_content_async(routing_prompt)
-        agent_type = response.text.strip().lower()
+        agent_type = (response.text or "general").strip().lower()
 
         if agent_type not in ["pregnancy", "newmom", "nutrition", "wellness", "healthcare", "general"]:
             agent_type = "general"

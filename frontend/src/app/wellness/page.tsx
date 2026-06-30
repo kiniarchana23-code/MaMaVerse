@@ -57,9 +57,16 @@ export default function WellnessPage() {
     try {
       const res = await agentApi.ask(query, 'wellness');
       setAnswer(res.data.response);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error('Wellness agent is offline');
+      const status = err?.response?.status;
+      if (status === 429) {
+        toast.error('AI is temporarily busy — please try again in a minute.');
+      } else if (status === 401) {
+        toast.error('Please sign in to ask questions.');
+      } else {
+        toast.error(err?.response?.data?.detail || 'Could not reach the AI. Please try again.');
+      }
     } finally {
       setQueryLoading(false);
     }

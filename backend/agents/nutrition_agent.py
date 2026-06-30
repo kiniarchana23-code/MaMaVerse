@@ -35,7 +35,19 @@ Respect vegetarian and non-vegetarian preferences.
         baby_age_months: int | None, dietary_pref: str = "vegetarian"
     ) -> str:
         sanitized = self._sanitize_input(query)
-        context = self._build_context(user_type, pregnancy_week, baby_age_months, dietary_pref)
+
+        # Build context inline
+        if user_type == "pregnant" and pregnancy_week:
+            trimester = (
+                "first trimester (weeks 1–12)" if pregnancy_week <= 12
+                else "second trimester (weeks 13–26)" if pregnancy_week <= 26
+                else "third trimester (weeks 27–40)"
+            )
+            context = f"Pregnant woman at week {pregnancy_week} ({trimester}), dietary preference: {dietary_pref}"
+        elif user_type == "new_mom" and baby_age_months is not None:
+            context = f"New mother with baby aged {baby_age_months} months, dietary preference: {dietary_pref}"
+        else:
+            context = f"User type: {user_type}, dietary preference: {dietary_pref}"
 
         prompt = f"""
 Context: {context}

@@ -9,9 +9,12 @@ firebase-admin
 
 # Google AI
 google-generativeai
+google-genai
 google-cloud-firestore
 google-cloud-storage
 google-cloud-secret-manager
+google-auth
+google-auth-httplib2
 
 # HTTP client for crawling medical sources
 httpx==0.27.0

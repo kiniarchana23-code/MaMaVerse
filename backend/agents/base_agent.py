@@ -8,6 +8,9 @@ from config import settings
 
 log = structlog.get_logger()
 
+# Configure Gemini with API key
+genai.configure(api_key=settings.GEMINI_API_KEY)
+
 MEDICAL_DISCLAIMER = (
     "\n\n---\n⚠️ **Medical Disclaimer**: This information is for educational purposes only "
     "and does not constitute medical advice. Always consult your gynecologist, "
